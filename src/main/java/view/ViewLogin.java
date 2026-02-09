@@ -4,26 +4,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import model.GameConstants;
-// Vista para la pantalla de inicio de sesión
 public class ViewLogin extends JFrame {
-    // Componentes de la interfaz
     private JTextField txtName1;
     private JTextField txtName2;
     private JButton btnEnter;
-    // Constructor que configura la ventana y los componentes
+
     public ViewLogin() {
         super(GameConstants.LOGIN_TITLE);
         initializeComponents();
         configureWindow();
     }
-    // Método privado para configurar las propiedades de la ventana
+
     private void configureWindow() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(GameConstants.LOGIN_WINDOW_WIDTH, GameConstants.LOGIN_WINDOW_HEIGHT);
         setLocationRelativeTo(null);
         setResizable(true);
     }
-    // Método privado para inicializar y organizar los componentes de la interfaz utilizando GridBagLayout para una mejor disposición visual
+
     private void initializeComponents() {
         JPanel panelPrincipal = new JPanel(new GridBagLayout());
         panelPrincipal.setBackground(new Color(60, 63, 65));

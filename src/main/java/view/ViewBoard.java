@@ -12,20 +12,18 @@ import model.GameConstants;
  */
 public class ViewBoard extends JFrame {
 
-    private JButton[] columnButtons;    // Botones de flecha arriba
-    private JButton[][] boardCells;     // La grilla del tablero
+    private JButton[] columnButtons;   
+    private JButton[][] boardCells;     
     private JLabel turnLabel;
     private JButton newGameButton;
     private JButton exitButton;
 
-    // Esquema de colores inmutable
     private final ColorScheme colorScheme;
 
     public ViewBoard() {
         this(new ColorScheme());
     }
 
-    // Constructor con esquema de colores personalizado
     public ViewBoard(ColorScheme colorScheme) {
         super(GameConstants.GAME_TITLE); 
         this.colorScheme = colorScheme;
@@ -119,9 +117,6 @@ public class ViewBoard extends JFrame {
         return btn;
     }
 
-    /**
-     * Asigna el controlador a todos los componentes interactivos.
-     */
     public void setGameListener(ActionListener listener) {
         //Listeners para las flechas superiores
         for (int i = 0; i < GameConstants.BOARD_COLS; i++) {
@@ -152,7 +147,6 @@ public class ViewBoard extends JFrame {
         for (int i = 0; i < GameConstants.BOARD_ROWS; i++) {
             for (int j = 0; j < GameConstants.BOARD_COLS; j++) {
                 int playerId = logicalBoard[i][j];
-                // El ColorScheme decide qué color corresponde a cada ID
                 boardCells[i][j].setBackground(colorScheme.getPlayerColor(playerId));
             }
         }

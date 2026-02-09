@@ -7,19 +7,12 @@ import view.ViewBoard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
-/**
- * El Controlador es el intermediario que gestiona el flujo del juego
- * Recibe eventos de la Vista, invoca acciones en el Modelo y actualiza la Vista.
- */
 public class Controller implements ActionListener {
 
-    // Referencias inmutables al modelo y las vistas
     private final GameModel gameModel;
     private final ViewLogin loginView;
     private final ViewBoard boardView;
 
-    // Constructor
     public Controller(GameModel gameModel, ViewLogin loginView, ViewBoard boardView) {
         this.gameModel = gameModel;
         this.loginView = loginView;

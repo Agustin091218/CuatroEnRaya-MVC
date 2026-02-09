@@ -1,7 +1,5 @@
 package model;
-// Clase que contiene las reglas del juego, como la verificación de ganadores, movimientos válidos y estado del tablero
 public final class GameRules {
-    // Constructor privado para evitar instanciación, ya que esta clase solo contiene métodos estáticos
     private GameRules() {}
     // Método para verificar si hay un ganador en el tablero
     public static int checkWinner(int[][] board) {

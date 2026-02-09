@@ -1,9 +1,7 @@
 package model;
-// Clase que representa a un jugador en el juego
 public class Player {
     private String name;
     private int id;
-    // Constructor que inicializa el jugador con un nombre y un ID, validando el nombre antes de asignarlo
     public Player(String name, int id) {
         validateName(name);
         this.name = name;
