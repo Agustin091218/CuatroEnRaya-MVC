@@ -1,0 +1,106 @@
+# MEMORY - Proyecto Final Programación
+
+## Análisis del Estado Actual
+
+### Estructura del Proyecto
+- **Tecnología**: Java (Maven project) con Swing UI
+- **Arquitectura**: Aplicación de escritorio del juego "4 en Raya" (Connect Four)
+- **Patrón MVC**: Implementado parcialmente
+
+### Componentes Actuales
+
+#### MODELO (`model/`)
+- `Model.java` - Lógica del juego y estado del tablero
+- `Player.java` - Entidad del jugador 
+- `Node.java` - Nodo para estructura de datos (no utilizado)
+- `Queue.java` - Cola (no utilizada en el juego actual)
+
+#### VISTA (`view/`)
+- `ViewBoard.java` - Interfaz del tablero de juego
+- `ViewLogin.java` - Formulario de ingreso de jugadores
+
+#### CONTROLADOR (`controller/`)
+- `Controller.java` - Gestiona interacciones entre modelo y vistas
+
+#### PUNTO DE ENTRADA (`app/`)
+- `Main.java` - Inicialización y cableado
+
+## Problemas Identificados
+
+### Nomenclatura Inconsistente
+1. **Variables**: Mezcla de estilos
+   - `camelCase`: `currentPlayer`, `columnButtons`, `boardCells`
+   - `snake_case`: Ningún encontrado
+   - **Recomendación**: Usar `camelCase` consistentemente
+
+2. **Clases**: Nombres adecuados en PascalCase
+   - `Model`, `ViewBoard`, `Controller` ✓
+
+3. **Constantes**: Buena práctica con `UPPER_SNAKE_CASE`
+   - `LOGIN`, `NEW_GAME`, `EXIT` ✓
+
+### Violaciones del Principio MVC
+
+#### Modelo Conteniendo Lógica de Vista
+- El modelo tiene responsabilidades que podrían extraerse
+- Métodos como `getCurrentPlayerName()` mezclan datos con presentación
+
+#### Vista Conteniendo Lógica de Negocio  
+- `ViewBoard` maneja directamente cálculos de colores
+- Validaciones embebidas en componentes visuales
+
+#### Controlador con Responsabilidades Excesivas
+- Maneja tanto eventos como flujo de aplicación completo
+- Contiene lógica de negocio que debería estar en el modelo
+
+### Code Smells Detectados
+
+1. **Variables Públicas en Player**
+   - `name` e `id` deberían ser privados con getters/setters
+
+2. **Clases No Utilizadas**
+   - `Node.java` y `Queue.java` no se usan en el juego actual
+
+3. **Métodos Largos**
+   - `checkWinnerAux()` en Model es complejo y difícil de mantener
+
+4. **Números Mágicos**
+   - Dimensiones del tablero (6x7) hardcodeadas
+   - Valores de colores hardcodeados
+
+5. **Manejo de Errores Inconsistente**
+   - Mix de excepciones y códigos de retorno
+
+## Decisiones Arquitectónicas (ADRs)
+
+### ADR-001: Estructura de Paquetes
+- **Decisión**: Mantener estructura MVC clásica
+- **Estado**: Necesita refuerzo para cumplir principios SOLID
+
+### ADR-002: Manejo de Estado del Juego
+- **Decisión**: Modelo centralizado con referencias a jugadores
+- **Problema**: Alto acoplamiento entre componentes
+
+## Deuda Técnica Acumulada
+
+### Alto Impacto
+1. Separación de responsabilidades MVC
+2. Estandarización de nomenclatura
+3. Eliminación de código no utilizado
+
+### Medio Impacto
+1. Extracción de constantes
+2. Mejora de manejo de errores
+3. Optimización de algoritmos
+
+### Bajo Impacto
+1. Documentación de métodos
+2. Formato de código consistente
+3. Pruebas unitarias
+
+## Próximos Pasos
+
+1. **Refactorización MVC**: Separar responsabilidades estrictamente
+2. **Nomenclatura**: Estandarizar a camelCase para variables
+3. **Limpieza**: Eliminar clases no utilizadas
+4. **SOLID**: Aplicar principios de diseño orientado a objetos

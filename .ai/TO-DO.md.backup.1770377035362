@@ -1,0 +1,76 @@
+# TO-DO - Refactorización MVC Proyecto Final Programación
+
+## Fase 1: Análisis y Planificación ✅
+- [x] Análisis completo del código existente
+- [x] Identificación de problemas de nomenclatura
+- [x] Detección de violaciones MVC
+- [x] Documentación del estado actual
+
+## Fase 2: Estandarización de Nomenclatura
+
+### Variables y Métodos (Prioridad: ALTA)
+- [ ] Estandarizar todas las variables a `camelCase`
+- [ ] Revisar nombres de métodos para consistencia
+- [ ] Aplicar prefijos consistentes para tipos similares
+
+### Constantes (Prioridad: MEDIA)
+- [ ] Extraer números mágicos a constantes
+- [ ] Usar `UPPER_SNAKE_CASE` para todas las constantes
+- [ ] Agrupar constantes por propósito
+
+## Fase 3: Refactorización MVC Estricta
+
+### Modelo (Prioridad: ALTA)
+- [ ] Hacer privados los atributos públicos en Player
+- [ ] Extraer lógica de validación del modelo
+- [ ] Separar estado del juego de lógica de negocio
+- [ ] Crear clase específica para reglas del juego
+- [ ] Eliminar dependencias de presentación
+
+### Vista (Prioridad: ALTA)
+- [ ] Eliminar lógica de negocio de ViewBoard
+- [ ] Extraer cálculos de colores a clase dedicada
+- [ ] Crear interfaces para comunicación con controlador
+- [ ] Separar componentes visuales de lógica
+
+### Controlador (Prioridad: ALTA)
+- [ ] Reducir responsabilidades del Controller
+- [ ] Crear manejadores específicos por tipo de evento
+- [ ] Separar flujo de aplicación de manejo de eventos
+- [ ] Implementar patrón Observer para notificaciones
+
+## Fase 4: Limpieza y Optimización
+
+### Eliminación de Código No Utilizado (Prioridad: MEDIA)
+- [ ] Eliminar Node.java (no utilizado)
+- [ ] Eliminar Queue.java (no utilizado)
+- [ ] Limpiar imports no utilizados
+
+### Mejora de Algoritmos (Prioridad: MEDIA)
+- [ ] Optimizar algoritmo de detección de ganador
+- [ ] Extraer método checkWinnerAux a clase dedicada
+- [ ] Implementar patrones de diseño donde corresponda
+
+## Fase 5: Mejora de Calidad
+
+### Manejo de Errores (Prioridad: MEDIA)
+- [ ] Implementar excepciones personalizadas
+- [ ] Estandarizar manejo de errores en toda la aplicación
+- [ ] Crear logging adecuado
+
+### Documentación (Prioridad: BAJA)
+- [ ] Documentar todos los métodos públicos
+- [ ] Crear JavaDoc para clases principales
+- [ ] Documentar flujo de la aplicación
+
+## Fase 6: Validación Final
+
+### Testing (Prioridad: BAJA)
+- [ ] Crear tests unitarios para modelo
+- [ ] Validar funcionamiento después de refactorización
+- [ ] Verificar cumplimiento MVC estricto
+
+### Revisión General
+- [ ] Verificar consistencia en nomenclatura
+- [ ] Validar separación de responsabilidades
+- [ ] Confirmar eliminación de code smells
