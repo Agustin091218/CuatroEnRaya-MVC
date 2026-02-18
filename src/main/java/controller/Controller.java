@@ -1,12 +1,19 @@
 package controller;
 
 import model.GameModel;
-import model.GameConstants;
+import view.ViewConstants;
 import view.ViewLogin;
 import view.ViewBoard;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Controlador: mediador puro entre Modelo y Vista.
+ * Importa de model/ para logica de negocio.
+ * Importa de view/ para coordinar la interfaz.
+ * No contiene logica de negocio ni codigo de renderizado.
+ */
 public class Controller implements ActionListener {
 
     private final GameModel gameModel;
@@ -18,44 +25,40 @@ public class Controller implements ActionListener {
         this.loginView = loginView;
         this.boardView = boardView;
 
-        // El controlador escucha los eventos
         loginView.setLoginListener(this);
         boardView.setGameListener(this);
     }
 
-    // Punto de manejo de eventos 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        String comand = e.getActionCommand();
+    public void actionPerformed(ActionEvent event) {
+        String command = event.getActionCommand();
 
-        switch (comand) {
-            case GameConstants.ACTION_LOGIN    -> handleLogin();
-            case GameConstants.ACTION_NEW_GAME -> handleNewGame();
-            case GameConstants.ACTION_EXIT     -> handleExit();
-            default                            -> tryPlayMove(comand);
+        switch (command) {
+            case ViewConstants.ACTION_LOGIN    -> handleLogin();
+            case ViewConstants.ACTION_NEW_GAME -> handleNewGame();
+            case ViewConstants.ACTION_EXIT     -> handleExit();
+            default                            -> handleColumnClick(command);
         }
     }
 
     private void handleLogin() {
         try {
-            //Pasar datos de la vista al modelo
-            gameModel.createPlayers(loginView.getName1(), loginView.getName2());
+            String nameOne = loginView.getPlayerOneName();
+            String nameTwo = loginView.getPlayerTwoName();
 
-            // Gestionar transición de pantallas
+            gameModel.createPlayers(nameOne, nameTwo);
+
             loginView.setVisible(false);
             boardView.setVisible(true);
-
-            //Inicializar el tablero 
-            refresh();
-        } catch (IllegalArgumentException e) {
-            // Si el modelo rechaza los datos, notificar a la vista
-            loginView.showErrorMessage(e.getMessage());
+            refreshBoard();
+        } catch (IllegalArgumentException exception) {
+            loginView.showErrorMessage(exception.getMessage());
         }
     }
 
     private void handleNewGame() {
         gameModel.resetGame();
-        refresh();
+        refreshBoard();
     }
 
     private void handleExit() {
@@ -63,41 +66,49 @@ public class Controller implements ActionListener {
         loginView.dispose();
     }
 
-    private void tryPlayMove(String comand) {
+    private void handleColumnClick(String command) {
         try {
-            int column = Integer.parseInt(comand);
+            int column = Integer.parseInt(command);
 
-            // Validar movimiento con el modelo
             if (!gameModel.tryPlayMove(column)) {
-                boardView.showErrorMessage(GameConstants.COLUMN_FULL_MESSAGE);
+                boardView.showErrorMessage(ViewConstants.COLUMN_FULL_MESSAGE);
                 return;
             }
 
-            // verificar si alguien ganó
             gameModel.processGameState();
 
-            // Verificar fin del juego
             if (gameModel.isGameOver()) {
-                String msg = String.format(GameConstants.WINNER_MESSAGE_FORMAT, gameModel.getWinnerName());
-                boardView.showWinnerMessage(msg);
-
-                // Jugar de nuevo o Salir
-                if (boardView.askNewGame() == 0) {
-                    handleNewGame();
-                } else {
-                    handleExit();
-                }
-                return; 
+                handleGameOver();
+                return;
             }
-            refresh();
 
+            refreshBoard();
         } catch (NumberFormatException ignored) {
-            // Ignora eventos que no sean coordenadas numéricas
+            // Ignora eventos que no sean coordenadas numericas
         }
     }
 
-    // Sincroniza la Vista con el estado actual del Modelo
-    private void refresh() {
+    private void handleGameOver() {
+        refreshBoard();
+
+        if (gameModel.isDraw()) {
+            boardView.showDrawMessage();
+        } else {
+            String winnerMessage = String.format(
+                    ViewConstants.WINNER_MESSAGE_FORMAT,
+                    gameModel.getWinnerName()
+            );
+            boardView.showWinnerMessage(winnerMessage);
+        }
+
+        if (boardView.askNewGame() == 0) {
+            handleNewGame();
+        } else {
+            handleExit();
+        }
+    }
+
+    private void refreshBoard() {
         boardView.drawBoard(gameModel.getBoard());
         boardView.updateTurn(gameModel.getCurrentPlayerName());
     }

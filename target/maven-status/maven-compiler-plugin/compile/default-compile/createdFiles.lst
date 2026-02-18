@@ -1,5 +1,6 @@
+view/ColorScheme.class
 app/Main.class
-model/ColorScheme.class
+view/ViewConstants.class
 view/ViewLogin.class
 model/GameModel.class
 model/GameConstants.class

@@ -1,14 +1,17 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GameModel {
-    private Player player1;
-    private Player player2;
+
+    private Player playerOne;
+    private Player playerTwo;
     private final ArrayList<Player> players = new ArrayList<>();
     private Player currentPlayer;
     private int[][] board;
     private int winnerId;
+    private boolean draw;
 
     public GameModel() {
         resetGame();
@@ -16,98 +19,116 @@ public class GameModel {
 
     /**
      * Crea los jugadores validando sus nombres.
-     * @throws IllegalArgumentException Si los nombres no cumplen las reglas.
+     * Delega la validacion individual a Player, y valida reglas entre jugadores aca.
      */
-    public void createPlayers(String name1, String name2) {
-        if (name1 == null || name1.trim().isEmpty()) {
+    public void createPlayers(String nameOne, String nameTwo) {
+        if (nameOne == null || nameOne.trim().isEmpty()) {
             throw new IllegalArgumentException(GameConstants.ERROR_PLAYER_NAME_EMPTY);
         }
-        if (name2 == null || name2.trim().isEmpty()) {
+        if (nameTwo == null || nameTwo.trim().isEmpty()) {
             throw new IllegalArgumentException(GameConstants.ERROR_PLAYER_NAME_EMPTY);
         }
-        if (name1.length() > GameConstants.MAX_PLAYER_NAME_LENGTH ||
-            name2.length() > GameConstants.MAX_PLAYER_NAME_LENGTH) {
-            throw new IllegalArgumentException(GameConstants.ERROR_PLAYER_NAME_TOO_LONG);
-        }
-        // Valida que no se llamen igual
-        if (name1.equalsIgnoreCase(name2)) {
-            throw new IllegalArgumentException("Los jugadores no pueden tener el mismo nombre.");
+        if (nameOne.equalsIgnoreCase(nameTwo)) {
+            throw new IllegalArgumentException(GameConstants.ERROR_DUPLICATE_PLAYER_NAMES);
         }
 
-        player1 = new Player(name1, GameConstants.PLAYER_ONE_ID);
-        player2 = new Player(name2, GameConstants.PLAYER_TWO_ID);
+        playerOne = new Player(nameOne, GameConstants.PLAYER_ONE_ID);
+        playerTwo = new Player(nameTwo, GameConstants.PLAYER_TWO_ID);
 
         players.clear();
-        players.add(player1);
-        players.add(player2);
+        players.add(playerOne);
+        players.add(playerTwo);
 
-        // El jugador 1 siempre empieza
-        this.currentPlayer = player1;
-
+        currentPlayer = playerOne;
         resetGame();
     }
 
     public void resetGame() {
         board = new int[GameConstants.BOARD_ROWS][GameConstants.BOARD_COLS];
         winnerId = GameConstants.EMPTY_CELL;
-        // Si ya existen jugadores, reseteamos al primero. Si no, queda null hasta createPlayers.
+        draw = false;
         if (!players.isEmpty()) {
             currentPlayer = players.get(0);
         }
     }
 
-    //Logica del juego
+    // Logica del juego
 
     public boolean tryPlayMove(int column) {
-        // Verificamos que la columna sea válida
         if (column < 0 || column >= GameConstants.BOARD_COLS) {
             return false;
         }
 
-        // Busca la primera celda vacía desde abajo hacia arriba
         for (int row = GameConstants.BOARD_ROWS - 1; row >= 0; row--) {
             if (board[row][column] == GameConstants.EMPTY_CELL) {
-                // Colocar la ficha del jugador actual
                 board[row][column] = currentPlayer.getId();
                 return true;
             }
         }
 
-        // Si la columna está llena
         return false;
     }
 
     public void processGameState() {
-        // Delega la verificacin de ganador a la clase GameRules
         winnerId = GameRules.checkWinner(board);
 
-        // cambiamos el turno
-        if (winnerId == GameConstants.EMPTY_CELL) {
-            switchTurn();
+        if (winnerId != GameConstants.EMPTY_CELL) {
+            return;
         }
+
+        if (GameRules.isBoardFull(board)) {
+            draw = true;
+            return;
+        }
+
+        switchTurn();
     }
 
     private void switchTurn() {
-        // Operador ternario para alternar entre jugador 1 y 2
-        currentPlayer = (currentPlayer == players.get(0)) ? players.get(1) : players.get(0);
+        currentPlayer = (currentPlayer == players.get(0))
+                ? players.get(1)
+                : players.get(0);
     }
 
+    // Estado del juego
+
     public boolean isGameOver() {
-        return winnerId != GameConstants.EMPTY_CELL;
+        return winnerId != GameConstants.EMPTY_CELL || draw;
+    }
+
+    public boolean isDraw() {
+        return draw;
     }
 
     public String getCurrentPlayerName() {
-        // Protección contra NullPointerException si se llama antes de crear jugadores
         return (currentPlayer != null) ? currentPlayer.getName() : "Desconocido";
     }
 
-    public int[][] getBoard() {
-        return board;
+    public String getWinnerName() {
+        if (winnerId == GameConstants.PLAYER_ONE_ID && playerOne != null) {
+            return playerOne.getName();
+        }
+        if (winnerId == GameConstants.PLAYER_TWO_ID && playerTwo != null) {
+            return playerTwo.getName();
+        }
+        return null;
     }
 
-    public String getWinnerName() {
-        if (winnerId == GameConstants.PLAYER_ONE_ID) return player1.getName();
-        if (winnerId == GameConstants.PLAYER_TWO_ID) return player2.getName();
-        return null;
+    // Copia defensiva: nadie externo puede mutar el tablero del modelo
+    public int[][] getBoard() {
+        int[][] copy = new int[board.length][];
+        for (int i = 0; i < board.length; i++) {
+            copy[i] = Arrays.copyOf(board[i], board[i].length);
+        }
+        return copy;
+    }
+
+    // Getters de dimensiones para que el Controlador pueda informar a la Vista
+    public int getBoardRows() {
+        return GameConstants.BOARD_ROWS;
+    }
+
+    public int getBoardCols() {
+        return GameConstants.BOARD_COLS;
     }
 }

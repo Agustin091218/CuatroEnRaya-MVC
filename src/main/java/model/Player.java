@@ -1,14 +1,18 @@
 package model;
+
 public class Player {
+
     private String name;
-    private int id;
+    private final int id;
+
     public Player(String name, int id) {
         validateName(name);
         this.name = name;
         this.id = id;
     }
+
     private void validateName(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException(GameConstants.ERROR_PLAYER_NAME_EMPTY);
         }
         if (name.length() > GameConstants.MAX_PLAYER_NAME_LENGTH) {
@@ -30,9 +34,5 @@ public class Player {
     public void setName(String name) {
         validateName(name);
         this.name = name;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }

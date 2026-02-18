@@ -1,9 +1,9 @@
-package model;
+package view;
 
 import java.awt.Color;
 
 public class ColorScheme {
-    
+
     private static final Color DEFAULT_PLAYER_ONE_COLOR = Color.WHITE;
     private static final Color DEFAULT_PLAYER_TWO_COLOR = new Color(220, 20, 60);
     private static final Color DEFAULT_EMPTY_CELL_COLOR = new Color(100, 100, 100);
@@ -15,6 +15,7 @@ public class ColorScheme {
     private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
     private static final Color DEFAULT_CYAN_COLOR = Color.CYAN;
     private static final Color DEFAULT_ORANGE_COLOR = Color.ORANGE;
+    private static final Color DEFAULT_LOGIN_BACKGROUND_COLOR = new Color(60, 63, 65);
 
     private final Color playerOneColor;
     private final Color playerTwoColor;
@@ -23,14 +24,14 @@ public class ColorScheme {
     private final Color buttonBackgroundColor;
 
     public ColorScheme() {
-        this(DEFAULT_PLAYER_ONE_COLOR, DEFAULT_PLAYER_TWO_COLOR, 
-             DEFAULT_EMPTY_CELL_COLOR, DEFAULT_BOARD_BACKGROUND_COLOR, 
+        this(DEFAULT_PLAYER_ONE_COLOR, DEFAULT_PLAYER_TWO_COLOR,
+             DEFAULT_EMPTY_CELL_COLOR, DEFAULT_BOARD_BACKGROUND_COLOR,
              DEFAULT_BUTTON_BACKGROUND_COLOR);
     }
 
-    public ColorScheme(Color playerOneColor, Color playerTwoColor, 
-                      Color emptyCellColor, Color boardBackgroundColor, 
-                      Color buttonBackgroundColor) {
+    public ColorScheme(Color playerOneColor, Color playerTwoColor,
+                       Color emptyCellColor, Color boardBackgroundColor,
+                       Color buttonBackgroundColor) {
         this.playerOneColor = playerOneColor;
         this.playerTwoColor = playerTwoColor;
         this.emptyCellColor = emptyCellColor;
@@ -80,5 +81,9 @@ public class ColorScheme {
 
     public Color getOrangeColor() {
         return DEFAULT_ORANGE_COLOR;
+    }
+
+    public Color getLoginBackgroundColor() {
+        return DEFAULT_LOGIN_BACKGROUND_COLOR;
     }
 }

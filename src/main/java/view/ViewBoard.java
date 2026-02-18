@@ -3,32 +3,35 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import model.ColorScheme;
-import model.GameConstants;
 
 /**
- * ViewBoard es la vista principal del juego.
- * Muestra el tablero, los botones de control y el estado del juego.
+ * Vista principal del juego. Muestra el tablero, botones de control y estado.
+ * No importa nada del modelo: recibe dimensiones por constructor,
+ * y datos del juego via metodos que invoca el Controlador.
  */
 public class ViewBoard extends JFrame {
 
-    private JButton[] columnButtons;   
-    private JButton[][] boardCells;     
+    private final int rows;
+    private final int cols;
+    private final ColorScheme colorScheme;
+
+    private JButton[] columnButtons;
+    private JButton[][] boardCells;
     private JLabel turnLabel;
     private JButton newGameButton;
     private JButton exitButton;
 
-    private final ColorScheme colorScheme;
-
-    public ViewBoard() {
-        this(new ColorScheme());
+    public ViewBoard(int rows, int cols) {
+        this(rows, cols, new ColorScheme());
     }
 
-    public ViewBoard(ColorScheme colorScheme) {
-        super(GameConstants.GAME_TITLE); 
+    public ViewBoard(int rows, int cols, ColorScheme colorScheme) {
+        super(ViewConstants.GAME_TITLE);
+        this.rows = rows;
+        this.cols = cols;
         this.colorScheme = colorScheme;
 
-        setSize(GameConstants.WINDOW_WIDTH, GameConstants.WINDOW_HEIGHT);
+        setSize(ViewConstants.WINDOW_WIDTH, ViewConstants.WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -37,62 +40,70 @@ public class ViewBoard extends JFrame {
     }
 
     private void initComponents() {
-        //panel superior
+        add(buildTopPanel(), BorderLayout.NORTH);
+        add(buildCenterPanel(), BorderLayout.CENTER);
+    }
+
+    // Panel superior: turno + botones de control
+    private JPanel buildTopPanel() {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(colorScheme.getButtonBackgroundColor());
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Etiqueta de Turno
         turnLabel = new JLabel();
-        turnLabel.setFont(new Font(GameConstants.FONT_FAMILY, Font.BOLD, GameConstants.FONT_SIZE_LARGE));
+        turnLabel.setFont(new Font(ViewConstants.FONT_FAMILY, Font.BOLD, ViewConstants.FONT_SIZE_LARGE));
         turnLabel.setForeground(colorScheme.getTextColor());
         turnLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(turnLabel, BorderLayout.CENTER);
 
-        // Panel de Botones de Control (Nueva Partida / Salir)
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         controlPanel.setBackground(colorScheme.getButtonBackgroundColor());
 
-        newGameButton = createButton(GameConstants.NEW_GAME_BUTTON_TEXT);
-        exitButton = createButton(GameConstants.EXIT_BUTTON_TEXT);
-
+        newGameButton = createStyledButton(ViewConstants.NEW_GAME_BUTTON_TEXT);
+        exitButton = createStyledButton(ViewConstants.EXIT_BUTTON_TEXT);
         controlPanel.add(newGameButton);
         controlPanel.add(exitButton);
+
         topPanel.add(controlPanel, BorderLayout.EAST);
+        return topPanel;
+    }
 
-        add(topPanel, BorderLayout.NORTH);
-
-        // Panel del tablero
+    // Panel central: flechas de columna + grilla del tablero
+    private JPanel buildCenterPanel() {
         JPanel centerContainer = new JPanel(new BorderLayout());
         centerContainer.setBackground(colorScheme.getBoardBackgroundColor());
         centerContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Panel de Botones de Columna 
-        JPanel dropButtonPanel = new JPanel(new GridLayout(1, GameConstants.BOARD_COLS, 5, 0));
-        dropButtonPanel.setBackground(colorScheme.getBoardBackgroundColor());
+        centerContainer.add(buildDropButtonPanel(), BorderLayout.NORTH);
+        centerContainer.add(buildBoardPanel(), BorderLayout.CENTER);
+        return centerContainer;
+    }
 
-        columnButtons = new JButton[GameConstants.BOARD_COLS];
+    private JPanel buildDropButtonPanel() {
+        JPanel dropPanel = new JPanel(new GridLayout(1, cols, 5, 0));
+        dropPanel.setBackground(colorScheme.getBoardBackgroundColor());
 
-        for (int i = 0; i < GameConstants.BOARD_COLS; i++) {
-            columnButtons[i] = new JButton(GameConstants.DROP_ARROW); // Flecha desde constantes
-            columnButtons[i].setFont(new Font(GameConstants.FONT_FAMILY, Font.BOLD, GameConstants.FONT_SIZE_MEDIUM));
+        columnButtons = new JButton[cols];
+        for (int i = 0; i < cols; i++) {
+            columnButtons[i] = new JButton(ViewConstants.DROP_ARROW);
+            columnButtons[i].setFont(new Font(ViewConstants.FONT_FAMILY, Font.BOLD, ViewConstants.FONT_SIZE_MEDIUM));
             columnButtons[i].setBackground(colorScheme.getButtonBackgroundColor());
             columnButtons[i].setForeground(colorScheme.getTextColor());
             columnButtons[i].setFocusPainted(false);
             columnButtons[i].setBorder(BorderFactory.createLineBorder(colorScheme.getButtonBorderColor(), 2));
-            dropButtonPanel.add(columnButtons[i]);
+            dropPanel.add(columnButtons[i]);
         }
-        centerContainer.add(dropButtonPanel, BorderLayout.NORTH);
+        return dropPanel;
+    }
 
-        // Grilla del Tablero
-        JPanel boardPanel = new JPanel(new GridLayout(GameConstants.BOARD_ROWS, GameConstants.BOARD_COLS, 5, 5));
+    private JPanel buildBoardPanel() {
+        JPanel boardPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
         boardPanel.setBackground(colorScheme.getBoardBackgroundColor());
         boardPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        boardCells = new JButton[GameConstants.BOARD_ROWS][GameConstants.BOARD_COLS];
-
-        for (int i = 0; i < GameConstants.BOARD_ROWS; i++) {
-            for (int j = 0; j < GameConstants.BOARD_COLS; j++) {
+        boardCells = new JButton[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 boardCells[i][j] = new JButton();
                 boardCells[i][j].setOpaque(true);
                 boardCells[i][j].setBackground(colorScheme.getEmptyCellColor());
@@ -101,68 +112,63 @@ public class ViewBoard extends JFrame {
                 boardPanel.add(boardCells[i][j]);
             }
         }
-        centerContainer.add(boardPanel, BorderLayout.CENTER);
-        add(centerContainer, BorderLayout.CENTER);
+        return boardPanel;
     }
 
-    // Método auxiliar para crear botones estandarizados
-    private JButton createButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setFont(new Font(GameConstants.FONT_FAMILY, Font.BOLD, GameConstants.FONT_SIZE_SMALL));
-        btn.setBackground(colorScheme.getControlButtonColor());
-        btn.setForeground(colorScheme.getTextColor());
-        btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createLineBorder(colorScheme.getTextColor(), 1));
-        btn.setPreferredSize(new Dimension(GameConstants.BUTTON_WIDTH, GameConstants.BUTTON_HEIGHT));
-        return btn;
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(new Font(ViewConstants.FONT_FAMILY, Font.BOLD, ViewConstants.FONT_SIZE_SMALL));
+        button.setBackground(colorScheme.getControlButtonColor());
+        button.setForeground(colorScheme.getTextColor());
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(colorScheme.getTextColor(), 1));
+        button.setPreferredSize(new Dimension(ViewConstants.BUTTON_WIDTH, ViewConstants.BUTTON_HEIGHT));
+        return button;
     }
+
+    // Registro de listeners (el Controlador se suscribe)
 
     public void setGameListener(ActionListener listener) {
-        //Listeners para las flechas superiores
-        for (int i = 0; i < GameConstants.BOARD_COLS; i++) {
+        for (int i = 0; i < cols; i++) {
             columnButtons[i].setActionCommand(String.valueOf(i));
             columnButtons[i].addActionListener(listener);
         }
 
-        //Listeners para las celdas del tablero
-        for (int i = 0; i < GameConstants.BOARD_ROWS; i++) {
-            for (int j = 0; j < GameConstants.BOARD_COLS; j++) {
-                boardCells[i][j].setActionCommand(String.valueOf(j)); // Manda el número de columna
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                boardCells[i][j].setActionCommand(String.valueOf(j));
                 boardCells[i][j].addActionListener(listener);
             }
         }
 
-        //Listeners para botones de control
-        newGameButton.setActionCommand(GameConstants.ACTION_NEW_GAME);
+        newGameButton.setActionCommand(ViewConstants.ACTION_NEW_GAME);
         newGameButton.addActionListener(listener);
 
-        exitButton.setActionCommand(GameConstants.ACTION_EXIT);
+        exitButton.setActionCommand(ViewConstants.ACTION_EXIT);
         exitButton.addActionListener(listener);
     }
 
-    /**
-     * Actualiza los colores del tablero
-     */
+    // Metodos que el Controlador invoca para actualizar la Vista
+
     public void drawBoard(int[][] logicalBoard) {
-        for (int i = 0; i < GameConstants.BOARD_ROWS; i++) {
-            for (int j = 0; j < GameConstants.BOARD_COLS; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 int playerId = logicalBoard[i][j];
                 boardCells[i][j].setBackground(colorScheme.getPlayerColor(playerId));
             }
         }
     }
 
-    /**
-     * Actualiza el texto del turno
-     */
     public void updateTurn(String playerName) {
-        turnLabel.setText(String.format(GameConstants.TURN_LABEL_FORMAT, playerName));
+        turnLabel.setText(String.format(ViewConstants.TURN_LABEL_FORMAT, playerName));
     }
 
-    //Metodos para mostrar mensajes
-
     public void showWinnerMessage(String message) {
-        JOptionPane.showMessageDialog(this, message, "¡Fin del Juego!", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "Fin del Juego!", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void showDrawMessage() {
+        JOptionPane.showMessageDialog(this, ViewConstants.DRAW_MESSAGE, "Fin del Juego!", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void showErrorMessage(String message) {
@@ -171,10 +177,10 @@ public class ViewBoard extends JFrame {
 
     public int askNewGame() {
         return JOptionPane.showConfirmDialog(
-            this,
-            GameConstants.NEW_GAME_PROMPT,
-            "Fin del Juego",
-            JOptionPane.YES_NO_OPTION
+                this,
+                ViewConstants.NEW_GAME_PROMPT,
+                "Fin del Juego",
+                JOptionPane.YES_NO_OPTION
         );
     }
 }
